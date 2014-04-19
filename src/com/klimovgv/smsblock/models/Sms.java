@@ -1,21 +1,21 @@
-package com.appspot.expenses_graph.models;
+package com.klimovgv.smsblock.models;
 
 public class Sms {
     long id;
     String phoneNumber;
-    String callerName;
+    String senderName;
     String messageText;
     String timestamp;
 
-    public Sms(String phoneNumber, String callerName, String messageText, String timestamp) {
+    public Sms(String phoneNumber, String senderName, String messageText, String timestamp) {
         this.phoneNumber = phoneNumber;
-        this.callerName = callerName;
+        this.senderName = senderName;
         this.messageText = messageText;
         this.timestamp = timestamp;
     }
 
-    public Sms(long id, String phoneNumber, String callerName, String messageText, String timestamp) {
-        this(phoneNumber, callerName, messageText, timestamp);
+    public Sms(long id, String phoneNumber, String senderName, String messageText, String timestamp) {
+        this(phoneNumber, senderName, messageText, timestamp);
         this.id = id;
     }
 
@@ -27,8 +27,8 @@ public class Sms {
         return phoneNumber;
     }
 
-    public String getCallerName() {
-        return callerName;
+    public String getSenderName() {
+        return senderName;
     }
 
     public String getMessageText() {
@@ -43,7 +43,7 @@ public class Sms {
     public String toString() {
         return "id=" + id +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", callerName='" + callerName + '\'' +
+                ", senderName='" + senderName + '\'' +
                 ", messageText='" + messageText + '\'' +
                 ", timestamp='" + timestamp + '\'';
     }

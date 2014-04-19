@@ -1,6 +1,7 @@
-package com.appspot.expenses_graph.activities;
+package com.klimovgv.smsblock.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -8,9 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import com.appspot.expenses_graph.R;
-import com.appspot.expenses_graph.db.SmsDataSource;
-import com.appspot.expenses_graph.models.Sms;
+import com.klimovgv.smsblock.R;
+import com.klimovgv.smsblock.db.SmsDataSource;
+import com.klimovgv.smsblock.models.Sms;
 
 import java.util.List;
 
@@ -37,6 +38,11 @@ public class MainActivity extends Activity {
 
     public void onRefreshClick(View view) {
         refreshSmsList();
+    }
+
+    public void onFiltersClick(View view) {
+        Intent intent = new Intent(this, FiltersActivity.class);
+        startActivity(intent);
     }
 
     private void refreshSmsList() {

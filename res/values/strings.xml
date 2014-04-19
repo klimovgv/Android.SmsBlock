@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Expenses.Android</string>
+    <string name="app_name">Sms Block</string>
     <string-array name="sms_listview_menu">
         <item>Delete</item>
     </string-array>

@@ -1,21 +1,14 @@
-package com.appspot.expenses_graph.db;
+package com.klimovgv.smsblock.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import com.appspot.expenses_graph.models.Sms;
+import com.klimovgv.smsblock.models.Sms;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class SmsDataSource {
-    // Database fields
-    private SQLiteDatabase database;
-    private MySQLiteHelper dbHelper;
+public class SmsDataSource extends DataSourceBase {
 
     private String[] allColumns = {
             MySQLiteHelper.COLUMN_SMS_ID,
@@ -25,38 +18,27 @@ public class SmsDataSource {
             MySQLiteHelper.COLUMN_SMS_TIMESTAMP
     };
 
-    private SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public SmsDataSource(Context context) {
-        dbHelper = new MySQLiteHelper(context);
+        super(context);
     }
 
-    public void open() throws SQLException {
-        database = dbHelper.getWritableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
-    }
-
-    public Sms createSms(String phoneNumber, String senderName, String messageText, Date timestamp) {
+    public void saveSms(Sms sms) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_SMS_PHONE_NUMBER, phoneNumber);
-        values.put(MySQLiteHelper.COLUMN_SMS_SENDER_NAME, senderName);
-        values.put(MySQLiteHelper.COLUMN_SMS_MESSAGE_TEXT, messageText);
-        values.put(MySQLiteHelper.COLUMN_SMS_TIMESTAMP, iso8601Format.format(timestamp));
+        values.put(MySQLiteHelper.COLUMN_SMS_PHONE_NUMBER, sms.getPhoneNumber());
+        values.put(MySQLiteHelper.COLUMN_SMS_SENDER_NAME, sms.getSenderName());
+        values.put(MySQLiteHelper.COLUMN_SMS_MESSAGE_TEXT, sms.getMessageText());
+        values.put(MySQLiteHelper.COLUMN_SMS_TIMESTAMP, sms.getTimestamp());
 
         long insertId = database.insert(MySQLiteHelper.TABLE_SMS, null, values);
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_SMS,
-                allColumns, MySQLiteHelper.COLUMN_SMS_ID + " = " + insertId, null,
-                null, null, null);
-        cursor.moveToFirst();
-
-        Sms newSms = cursorToSms(cursor);
-        cursor.close();
-
-        return newSms;
+//        Cursor cursor = database.query(MySQLiteHelper.TABLE_SMS,
+//                allColumns, MySQLiteHelper.COLUMN_SMS_ID + " = " + insertId, null,
+//                null, null, null);
+//        cursor.moveToFirst();
+//
+//        Sms newSms = cursorToSms(cursor);
+//        cursor.close();
     }
 
     public void deleteSms(Sms sms) {
@@ -87,4 +69,6 @@ public class SmsDataSource {
     private Sms cursorToSms(Cursor cursor) {
         return new Sms(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
     }
+
+
 }

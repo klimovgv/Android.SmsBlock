@@ -1,4 +1,4 @@
-package com.appspot.expenses_graph.activities;
+package com.klimovgv.smsblock.activities;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import com.appspot.expenses_graph.R;
-import com.appspot.expenses_graph.models.Sms;
+import com.klimovgv.smsblock.R;
+import com.klimovgv.smsblock.models.Sms;
 
 import java.util.List;
 
