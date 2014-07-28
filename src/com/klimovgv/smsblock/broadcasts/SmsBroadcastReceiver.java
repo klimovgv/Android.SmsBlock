@@ -14,7 +14,10 @@ import com.klimovgv.smsblock.filters.PhoneNumberContainsSmsFilter;
 import com.klimovgv.smsblock.models.Sms;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "SmsBlock";
@@ -46,25 +49,27 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             // get sms filters
             List<ISmsFilter> filters = getSmsFilters(context);
 
+            // get transport sms messages (could be more than 1 if message body is long enough)
             for (int i = 0; i < messages.length; i++) {
                 smsMessages[i] = SmsMessage.createFromPdu((byte[]) messages[i]);
+            }
 
-                Sms sms = convertToSmsModel(callerNameGetter, smsMessages[i]);
+            // union transport sms messages in one big sms message to show
+            Sms sms = convertToSmsModel(callerNameGetter, smsMessages);
 
-                // apply filters
-                boolean wasApplied = false;
-                boolean doBlockSms = false;
+            // apply filters
+            boolean wasApplied = false;
+            boolean doBlockSms = false;
 
-                for (int k = 0; k < filters.size() && !wasApplied; k++) {
-                    ISmsFilter smsFilter = filters.get(k);
+            for (int k = 0; k < filters.size() && !wasApplied; k++) {
+                ISmsFilter smsFilter = filters.get(k);
 
-                    wasApplied = smsFilter.filter(sms);
-                    doBlockSms = smsFilter.isBlock();
-                }
+                wasApplied = smsFilter.filter(sms);
+                doBlockSms = smsFilter.isBlock();
+            }
 
-                if (wasApplied && doBlockSms) {
-                    blockSms(smsDataSource, sms);
-                }
+            if (wasApplied && doBlockSms) {
+                blockSms(smsDataSource, sms);
             }
         }
         finally {
@@ -109,11 +114,11 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private Sms convertToSmsModel(CallerNameGetter callerNameGetter, SmsMessage smsMessage) {
-        String phoneNumber = smsMessage.getOriginatingAddress();
+    private Sms convertToSmsModel(CallerNameGetter callerNameGetter, SmsMessage[] smsMessages) {
+        String phoneNumber = smsMessages[0].getOriginatingAddress();
         String senderName = callerNameGetter.getCallerName(phoneNumber);
-        String messageText = smsMessage.getMessageBody();
-        String timestamp = getSmsTimestampString(smsMessage);
+        String messageText = getMessageBody(smsMessages);
+        String timestamp = getSmsTimestampString(smsMessages[0]);
 
         String logMessage =
                 String.format("SMS: [%1$s] [%2$s] [%3$s] [%4$s]",
@@ -122,6 +127,16 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         Log.d(TAG, logMessage);
 
         return new Sms(phoneNumber, senderName, messageText, timestamp);
+    }
+
+    private String getMessageBody(SmsMessage[] smsMessages) {
+        String messageBody = "";
+
+        for (int i = 0; i < smsMessages.length; i++) {
+            messageBody += smsMessages[i].getMessageBody();
+        }
+
+        return messageBody;
     }
 
     private String getSmsTimestampString(SmsMessage smsMessage) {
